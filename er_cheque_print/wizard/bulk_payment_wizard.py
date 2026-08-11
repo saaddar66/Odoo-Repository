@@ -323,11 +323,14 @@ class HrPayslipBulkPayment(models.TransientModel):
                 )
 
                 # Use standard Odoo payment creation.
-                payments = (
-                    payment_register._create_payments()
-                )
+                payments = payment_register._create_payments()
 
                 if payments:
+                    # Link the employee from the payslip
+                    payments.write({
+                        'employee_id': payslip.employee_id.id,
+                    })
+
                     created_payments |= payments
                     cheque_number += 1
 

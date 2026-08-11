@@ -19,7 +19,6 @@ const FIELD_KEYS = [
     ["bank_address", "Bank Address"],
     ["payee_name_line1", "Payee Name L1"],
     ["payee_name_line2", "Payee Name L2"],
-    ["payee_name_line3", "Payee Name L3"],
     ["account_payee", "Account Payee"]
 ];
 

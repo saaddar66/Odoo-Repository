@@ -93,6 +93,7 @@ class ChequePrintWizard(models.TransientModel):
             'currency_id': payment.currency_id.id,
             'cheque_date': payment.date or fields.Date.context_today(self),
             'memo': payment.memo or '',
+            'is_ac_payable': payment.get_cheque_ac_payable(fallback=True),
         })
 
         return res
@@ -146,6 +147,10 @@ class ChequePrintWizard(models.TransientModel):
         if not self.leaf_id:
             raise UserError("Please select a cheque number before printing.")
 
+        effective_is_ac_payable = self.payment_id.get_cheque_ac_payable(
+            fallback=self.is_ac_payable,
+        )
+
         # 1. Freeze all cheque data onto the leaf (snapshot) so the QWeb
         #    template reads from doc.<field>_snapshot — no data= dict needed.
         self.leaf_id.mark_used(
@@ -165,13 +170,13 @@ class ChequePrintWizard(models.TransientModel):
             'bank_email': self.bank_email or '',
             'bank_address': self.bank_address or '',
             'memo_snapshot': self.memo or '',
-            'is_ac_payable_snapshot': self.is_ac_payable,
+            'is_ac_payable_snapshot': effective_is_ac_payable,
         })
 
         # 3. Write cheque leaf and A/C Payee flag back to the payment record
         self.payment_id.write({
             'cheque_leaf_id': self.leaf_id.id,
-            'is_ac_payable': self.is_ac_payable,
+            'is_ac_payable': effective_is_ac_payable,
         })
 
         # 4. Set paper format from the layout (if configured)

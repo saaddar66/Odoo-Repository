@@ -6,7 +6,6 @@ FIELD_KEYS = [
     ('payee_name', 'Payee Name'),
     ('payee_name_line1', 'Payee Name - Line 1'),
     ('payee_name_line2', 'Payee Name - Line 2'),
-    ('payee_name_line3', 'Payee Name - Line 3'),
     ('amount_words_line1', 'Amount in Words - Line 1'),
     ('amount_words_line2', 'Amount in Words - Line 2'),
     ('amount_figures', 'Amount in Figures'),

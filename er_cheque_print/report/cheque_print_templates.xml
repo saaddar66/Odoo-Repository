@@ -7,8 +7,9 @@
                 <!-- One cheque = one PDF page -->
                 <div
                     class="page"
-                    t-attf-style="
-                        #{'' if doc_last else 'page-break-after: always; break-after: page;'}
+                    style="
+                        page-break-after: always;
+                        break-after: page;
                         page-break-inside: avoid;
                         break-inside: avoid;
                         margin: 0;
@@ -42,18 +43,18 @@
                     <t t-set="amount_words_line2"
                     t-value="' '.join(all_words[mid:]) if len(all_words) &gt; 6 else ''"/>
 
-                    <!-- Payee name split into three lines -->
-                    <t t-set="payee_lines"
-                    t-value="doc._split_payee_name()"/>
+                    <!-- Payee name split into two lines -->
+                    <t t-set="payee_words"
+                    t-value="(doc.payee_name_snapshot or '').split()"/>
+
+                    <t t-set="payee_mid"
+                    t-value="len(payee_words) // 2 if len(payee_words) &gt; 1 else len(payee_words)"/>
 
                     <t t-set="payee_name_line1"
-                    t-value="payee_lines[0]"/>
+                    t-value="' '.join(payee_words[:payee_mid]) if payee_words else ''"/>
 
                     <t t-set="payee_name_line2"
-                    t-value="payee_lines[1]"/>
-
-                    <t t-set="payee_name_line3"
-                    t-value="payee_lines[2]"/>
+                    t-value="' '.join(payee_words[payee_mid:]) if len(payee_words) &gt; 1 else ''"/>
 
                     <!-- Cheque content -->
                     <div
@@ -128,10 +129,6 @@
 
                                     <t t-elif="f.field_key == 'payee_name_line2'">
                                         <t t-esc="payee_name_line2"/>
-                                    </t>
-
-                                    <t t-elif="f.field_key == 'payee_name_line3'">
-                                        <t t-esc="payee_name_line3"/>
                                     </t>
 
                                     <t t-elif="f.field_key == 'amount_figures'">
