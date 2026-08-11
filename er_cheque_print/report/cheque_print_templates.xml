@@ -7,9 +7,8 @@
                 <!-- One cheque = one PDF page -->
                 <div
                     class="page"
-                    style="
-                        page-break-after: always;
-                        break-after: page;
+                    t-attf-style="
+                        #{'' if doc_last else 'page-break-after: always; break-after: page;'}
                         page-break-inside: avoid;
                         break-inside: avoid;
                         margin: 0;
