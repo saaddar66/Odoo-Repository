@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_inherit_approval" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.approval</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_for_approval" string="Submit for Approval" type="object" class="oe_highlight"
+                        invisible="move_type != 'in_invoice' or not is_manual_bill or approval_state != 'draft' or state != 'draft'"/>
+                <button name="action_approve" string="Approve" type="object" class="oe_highlight"
+                        groups="accounting_kps.group_vendor_bill_approver"
+                        invisible="move_type != 'in_invoice' or not is_manual_bill or approval_state != 'pending'"/>
+                <button name="action_reject" string="Reject" type="object" class="btn-danger"
+                        groups="accounting_kps.group_vendor_bill_approver"
+                        invisible="move_type != 'in_invoice' or not is_manual_bill or approval_state != 'pending'"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="is_manual_bill" invisible="1"/>
+                <field name="approval_state" widget="statusbar"
+                       invisible="move_type != 'in_invoice' or not is_manual_bill"/>
+            </xpath>
+
+            <!-- Make key fields readonly when approval is pending -->
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="readonly">state != 'draft' or approval_state == 'pending'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="attributes">
+                <attribute name="readonly">state != 'draft' or approval_state == 'pending'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                <attribute name="readonly">state != 'draft' or approval_state == 'pending'</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

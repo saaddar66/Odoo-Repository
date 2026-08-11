@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_purchase_order_import">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: 'Arial', sans-serif; font-size: 11px; color: #333;">
+                        <style>
+                            .table-bordered { 
+                                border: 2px solid black !important; 
+                                border-collapse: collapse; 
+                                width: 100%; 
+                            }
+                            .table-bordered th, .table-bordered td { 
+                                border: 1px solid black !important; 
+                                padding: 6px; 
+                                vertical-align: top; 
+                            }
+                            .header-title { 
+                                background-color: #000; 
+                                color: #fff; 
+                                padding: 8px; 
+                                text-align: center; 
+                                font-weight: bold; 
+                                font-size: 16px; 
+                                letter-spacing: 2px;
+                            }
+                            .section-header { 
+                                background-color: #e8e8e8; 
+                                font-weight: bold; 
+                                text-align: center; 
+                                padding: 8px;
+                                border-bottom: 1px solid black; 
+                            }
+                            .info-box {
+                                border: 2px solid black;
+                                padding: 6px;
+                                margin-top: -2px;
+                            }
+                            .signature-section { 
+                                margin-top: 100px;
+                                padding: 0 20px;
+                            }
+                            .signature-box { 
+                                text-align: center; 
+                                padding-top: 60px;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                        </style>
+
+                        <!-- Header with Logo and Title -->
+                        <table style="width: 100%; border: 2px solid black; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 40%; border-right: 1px solid black; padding: 15px; vertical-align: middle;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 60px;" alt="Logo"/>
+                                </td>
+                                <td style="width: 60%; padding: 0; vertical-align: top;">
+                                    <div class="header-title">PURCHASE ORDER</div>
+                                    <div style="padding: 10px; text-align: right;">
+                                        <strong>PO No: </strong> <span t-field="o.name"/><br/>
+                                        <strong>Date: </strong> <span t-field="o.date_order" t-options='{"widget": "date", "format": "dd.MM.yyyy"}'/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Buyer/Supplier Section -->
+                        <table class="table-bordered" style="margin-top: -2px;">
+                            <tr>
+                                <th class="section-header" style="width: 50%;">Buyer</th>
+                                <th class="section-header" style="width: 50%;">Supplier</th>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px;">
+                                    <strong><span t-field="o.company_id.name"/></strong><br/>
+                                    <span t-field="o.company_id.street"/><t t-if="o.company_id.street2">, <span t-field="o.company_id.street2"/></t><br/>
+                                    <t t-if="o.company_id.city"><span t-field="o.company_id.city"/></t><t t-if="o.company_id.zip"> - <span t-field="o.company_id.zip"/></t><br/>
+                                    <t t-if="o.company_id.phone">Phone No: <span t-field="o.company_id.phone"/><br/></t>
+                                    <br/>
+                                    <t t-if="o.company_id.vat">STRN: <span t-field="o.company_id.vat"/><br/></t>
+                                    <t t-if="o.company_id.vat">NTN: <span t-field="o.company_id.vat"/></t>
+                                </td>
+                                <td style="padding: 10px;">
+                                    <strong><span t-field="o.partner_id.name"/></strong><br/>
+                                    <span t-field="o.partner_id.street"/><t t-if="o.partner_id.street2">, <span t-field="o.partner_id.street2"/></t><br/>
+                                    <t t-if="o.partner_id.city"><span t-field="o.partner_id.city"/></t><t t-if="o.partner_id.zip"> - <span t-field="o.partner_id.zip"/></t><br/>
+                                    <t t-if="o.partner_id.phone">Phone No: <span t-field="o.partner_id.phone"/><br/></t>
+                                    <t t-if="o.partner_id.vat">NTN: <span t-field="o.partner_id.vat"/><br/></t>
+                                    <t t-if="o.partner_id.vat">STRN: <span t-field="o.partner_id.vat"/><br/></t>
+                                    CNIC: <br/>
+                                    <t t-if="o.payment_term_id">Payment Terms: <span t-field="o.payment_term_id.name"/><br/></t>
+                                    <t t-if="o.incoterm_id">Incoterms: <span t-field="o.incoterm_id.code"/><br/></t>
+                                    <t t-if="o.date_planned">Arrival Date: <span t-field="o.date_planned" t-options='{"widget": "date", "format": "dd.MM.yyyy"}'/></t>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Product Description Label -->
+                        <div class="info-box" style="font-weight: bold;">
+                            Product<br/>Description :
+                        </div>
+
+                        <!-- Items Table -->
+                        <table class="table-bordered" style="margin-top: -2px;">
+                            <thead>
+                                <tr style="background-color: #e8e8e8;">
+                                    <th style="text-align: center; width: 25%;">Item Description</th>
+                                    <th style="text-align: center; width: 8%;">UoM</th>
+                                    <th style="text-align: center; width: 10%;">QTY</th>
+                                    <th style="text-align: center; width: 12%;">Delivery Date</th>
+                                    <th style="text-align: center; width: 10%;">Rate</th>
+                                    <th style="text-align: center; width: 12%;">Net Amount</th>
+                                    <th style="text-align: center; width: 8%;">ALT UOM</th>
+                                    <th style="text-align: center; width: 10%;">ALT UOM QTY</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.order_line" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.name"/></td>
+                                        <td style="text-align: center;"><span t-field="line.product_uom.name"/></td>
+                                        <td style="text-align: right;"><span t-esc="'{:,.3f}'.format(line.product_qty)"/></td>
+                                        <td style="text-align: center;"><span t-field="line.date_planned" t-options='{"widget": "date", "format": "dd.MM.yyyy"}'/></td>
+                                        <td style="text-align: right;"><span t-esc="'{:,.2f}'.format(line.price_unit)"/></td>
+                                        <td style="text-align: right;"><span t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
+                                        <td style="text-align: center;"></td>
+                                        <td style="text-align: center;"></td>
+                                    </tr>
+                                </t>
+                                <!-- Total Row -->
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td></td>
+                                    <td style="text-align: right;"><strong><span t-esc="'{:,.3f}'.format(sum(o.order_line.mapped('product_qty')))"/></strong></td>
+                                    <td colspan="2"></td>
+                                    <td style="text-align: right;"><strong><span t-esc="'{:,.2f}'.format(o.amount_total)"/></strong></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Amount in Words -->
+                        <div class="info-box">
+                            <span t-esc="o.currency_id.amount_to_text(o.amount_total).upper()"/>
+                        </div>
+
+                        <!-- Shipping Schedule Notice -->
+                        <div class="info-box" style="font-weight: bold; text-transform: uppercase;">
+                            FOR SHIPPING SCHEDULE PLEASE KEEP IN TOUCH WITH SUPPLYCHAIN TEAM AND
+                        </div>
+
+                        <!-- Terms and Conditions (Skipped as requested) -->
+                        <!-- You can add terms here later if needed -->
+
+                        <!-- Signatures -->
+                        <div class="signature-section">
+                            <table style="width: 100%; border: none;">
+                                <tr>
+                                    <td style="width: 33%; border: none; text-align: left;">
+                                        <div class="signature-box">
+                                            Prepared By
+                                        </div>
+                                    </td>
+                                    <td style="width: 34%; border: none; text-align: center;">
+                                        <div class="signature-box">
+                                            Checked By
+                                        </div>
+                                    </td>
+                                    <td style="width: 33%; border: none; text-align: right;">
+                                        <div class="signature-box">
+                                            Approved By
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- Page Number -->
+                        <div style="text-align: right; margin-top: 30px; font-size: 10px;">
+                            Page 1 of 1
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
