@@ -177,6 +177,10 @@ class BulkChequePrintWizard(models.TransientModel):
             cheque_leaves,
         ):
 
+            effective_is_ac_payable = payment.get_cheque_ac_payable(
+                fallback=True,
+            )
+
             withholding_total = sum(
                 self.env[
                     'account.payment.withholding.line'
@@ -227,22 +231,14 @@ class BulkChequePrintWizard(models.TransientModel):
                 amount_words=amount_words,
             )
 
-            # Save additional cheque data.
             leaf.write({
-                'memo_snapshot':
-                    self.memo or '',
-
-                'is_ac_payable_snapshot':
-                    self.is_ac_payable,
+                'memo_snapshot': self.memo or '',
+                'is_ac_payable_snapshot': effective_is_ac_payable,
             })
 
-            # Link cheque leaf to payment.
             payment.write({
-                'cheque_leaf_id':
-                    leaf.id,
-
-                'is_ac_payable':
-                    self.is_ac_payable,
+                'cheque_leaf_id': leaf.id,
+                'is_ac_payable': effective_is_ac_payable,
             })
 
             printed_leaves |= leaf
