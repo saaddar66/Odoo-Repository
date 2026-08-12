@@ -4,7 +4,22 @@ class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     cheque_leaf_id = fields.Many2one('cheque.leaf', string="Printed Cheque Leaf", copy=False)
-    is_ac_payable = fields.Boolean(string="A/C Payee")
+    is_ac_payable = fields.Boolean(string="A/C Payee", )
+    employee_id = fields.Many2one('hr.employee', string="Employee", store=True, readonly=False)
+
+    def get_cheque_ac_payable(self, fallback=True):
+        self.ensure_one()
+
+        employee_code = (
+            self.employee_id.x_studio_code or ''
+        ).strip().upper() if self.employee_id else ''
+
+        if employee_code.endswith('A'):
+            return True
+        elif employee_code.endswith('B'):
+            return False
+
+        return fallback
 
     def action_open_cheque_print_wizard(self):
         self.ensure_one()
